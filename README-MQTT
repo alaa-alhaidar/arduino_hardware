@@ -1,0 +1,67 @@
+Die elementaren MQTT-Funktionen in deinem Code sind:
+
+1. MQTT konfigurieren – in `setup()`
+
+```cpp
+mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+mqttClient.setCallback(handleMqttMessage);
+```
+
+- `setServer()` legt Broker und Port fest.
+- `setCallback()` bestimmt, welche Funktion empfangene Nachrichten verarbeitet.
+
+2. Verbindung herstellen – `connectMqtt()`
+
+```cpp
+mqttClient.connect(clientId.c_str(), MQTT_USERNAME, MQTT_PASSWORD);
+```
+
+Diese Funktion verbindet den Nano mit dem MQTT-Broker.
+
+3. Topic abonnieren
+
+```cpp
+mqttClient.subscribe(MQTT_CONTROL_TOPIC, 1);
+```
+
+Damit empfängt der Nano die Befehle `start` und `stop`.
+
+4. Nachrichten empfangen – `handleMqttMessage()`
+
+```cpp
+void handleMqttMessage(char *topic, byte *payload, unsigned int length)
+```
+
+Diese Callback-Funktion verarbeitet eingehende MQTT-Nachrichten.
+
+5. Messwerte senden
+
+```cpp
+mqttClient.publish(MQTT_TOPIC, payload, true);
+```
+
+Das ist die wichtigste Zeile zum Senden. `payload` enthält die gebaute JSON-Nachricht.
+
+6. MQTT-Verbindung bearbeiten – in `loop()`
+
+```cpp
+mqttClient.loop();
+```
+
+Diese Funktion muss regelmäßig laufen. Sie hält die Verbindung aktiv und ruft bei neuen Nachrichten `handleMqttMessage()` auf.
+
+7. Verbindung prüfen
+
+```cpp
+mqttClient.connected()
+```
+
+Damit erkennt der Code, ob der Nano noch mit dem Broker verbunden ist.
+
+Kurz zusammengefasst:
+
+```text
+setServer → connect → subscribe → loop → callback
+                         |
+                      publish
+```
